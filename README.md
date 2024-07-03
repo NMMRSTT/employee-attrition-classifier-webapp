@@ -2,6 +2,8 @@
 
 This repository contains a Streamlit web application for predicting employee churn using a machine learning model. The app allows users to input an employee number to predict churn probability and visualize key factors influencing the prediction.
 
+**Main Piece**: The main piece of this project is the Streamlit web app that you will be able to find under [PLACEHOLDER URL].
+
 ## Project Structure
 
 ```
@@ -46,8 +48,8 @@ EMPLOYEE-ATTRITION-CLASSIFIER-WEBAPP/
 
 2. Create and activate a virtual environment:
    ```sh
-   python -m venv venv
-   source venv/bin/activate  # On Windows, use `venv\Scripts\activate`
+   python -m venv employee_attrition
+   source employee_attrition/bin/activate  # On Windows, use `employee_attrition\Scripts\activate`
    ```
 
 3. Install the required packages:
@@ -94,4 +96,4 @@ This project is licensed under the terms of the MIT license.
 
 *Created by Jens Reich*
 
-**Note**: This tool is a prototype and should be used alongside other HR insights and personal knowledge of employees.
+**Note**: The best model was trained using the `test_notebook.ipynb` file.
