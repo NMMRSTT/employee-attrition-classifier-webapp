@@ -2,7 +2,7 @@
 
 This repository contains a Streamlit web application for predicting employee churn using a machine learning model. The app allows users to input an employee number to predict churn probability and visualize key factors influencing the prediction.
 
-**Main Piece**: The main piece of this project is the Streamlit web app that you will be able to find under [PLACEHOLDER URL].
+**Main Focus**: The main focus of this project is the Streamlit web app that you will be able to find under [PLACEHOLDER URL].
 
 ## Project Structure
 
