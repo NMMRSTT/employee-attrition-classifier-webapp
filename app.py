@@ -1,14 +1,30 @@
+import os
+import sys
 import streamlit as st
 import pandas as pd
-import os
 import shap
 import matplotlib.pyplot as plt
 import numpy as np
 import xgboost as xgb
 from matplotlib.colors import LinearSegmentedColormap
 
+# Verify the environment
+st.write(f"Python executable: {sys.executable}")
+st.write(f"Python version: {sys.version}")
+
+# Function to check if file exists
+def check_file_exists(file_path):
+    if not os.path.exists(file_path):
+        st.error(f"File not found: {file_path}")
+        return False
+    return True
+
+# Construct the image path dynamically
+image_path = os.path.join(os.path.dirname(__file__), "image.png")
+
 # Header Image
-st.image("image.png", use_column_width=True)
+if check_file_exists(image_path):
+    st.image(image_path, use_column_width=True)
 
 # Title and Description
 st.title("Employee Churn Prediction")
@@ -131,9 +147,13 @@ else:
         """)
 
         # Compute SHAP values for the given employee
-        explainer = shap.TreeExplainer(model)
-        shap_values = explainer.shap_values(df)
-        shap_values_employee = explainer.shap_values(employee_data)
+        try:
+            explainer = shap.TreeExplainer(model)
+            shap_values = explainer.shap_values(df)
+            shap_values_employee = explainer.shap_values(employee_data)
+        except Exception as e:
+            st.markdown(f'<div class="error-box">Error computing SHAP values: {e}</div>', unsafe_allow_html=True)
+            st.stop()
 
         # Select only non-binary features for SHAP interpretation
         shap_values_non_binary = shap_values[:, [df.columns.get_loc(c) for c in non_binary_columns]]
@@ -157,18 +177,21 @@ else:
         custom_cmap = LinearSegmentedColormap.from_list("custom_blue_red", colors, N=n_bins)
 
         fig, ax = plt.subplots(figsize=(10, 6))
-        shap.summary_plot(shap_values_top_5, X_test_top_5, plot_type="dot", color=custom_cmap, show=False)
-        
-        # Overlay the current employee's SHAP values with corresponding color
-        for i, feature in enumerate(top_5_features):
-            value = shap_values_employee_non_binary[0, top_5_features_idx[i]]
-            feature_value = feature_values_employee[i]
-            normalized_value = (feature_value - df[feature].min()) / (df[feature].max() - df[feature].min())
-            color = custom_cmap(normalized_value)
-            ax.scatter(value, i, color=color, s=100, edgecolor='white', linewidth=1.5, zorder=5)
-        
-        plt.tight_layout()
-        st.pyplot(fig)
+        try:
+            shap.summary_plot(shap_values_top_5, X_test_top_5, plot_type="dot", color=custom_cmap, show=False)
+            
+            # Overlay the current employee's SHAP values with corresponding color
+            for i, feature in enumerate(top_5_features):
+                value = shap_values_employee_non_binary[0, top_5_features_idx[i]]
+                feature_value = feature_values_employee[i]
+                normalized_value = (feature_value - df[feature].min()) / (df[feature].max() - df[feature].min())
+                color = custom_cmap(normalized_value)
+                ax.scatter(value, i, color=color, s=100, edgecolor='white', linewidth=1.5, zorder=5)
+            
+            plt.tight_layout()
+            st.pyplot(fig)
+        except Exception as e:
+            st.markdown(f'<div class="error-box">Error generating SHAP plot: {e}</div>', unsafe_allow_html=True)
 
         # Explanation of the SHAP plot
         st.markdown("""
