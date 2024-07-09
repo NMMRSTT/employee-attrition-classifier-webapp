@@ -7,9 +7,8 @@ import numpy as np
 import xgboost as xgb
 from matplotlib.colors import LinearSegmentedColormap
 
-
 # Header Image
-st.image("Screenshot 2024-07-02 113624.png", use_column_width=True)
+st.image("image.png", use_column_width=True)
 
 # Title and Description
 st.title("Employee Churn Prediction")
