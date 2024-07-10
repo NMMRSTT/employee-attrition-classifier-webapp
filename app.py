@@ -8,10 +8,6 @@ import numpy as np
 import xgboost as xgb
 from matplotlib.colors import LinearSegmentedColormap
 
-# Verify the environment
-st.write(f"Python executable: {sys.executable}")
-st.write(f"Python version: {sys.version}")
-
 # Function to check if file exists
 def check_file_exists(file_path):
     if not os.path.exists(file_path):
@@ -62,7 +58,9 @@ st.markdown("""
 """, unsafe_allow_html=True)
 st.markdown('<p class="big-font">Predict the probability of employee churn using a machine learning model.</p>', unsafe_allow_html=True)
 st.markdown("""
-**Proof of Concept**: This Streamlit web app demonstrates an employee churn model. It allows users to input an employee number to predict churn probability and visualize key factors influencing the prediction.
+**Proof of Concept**: This Streamlit web app demonstrates an employee churn model. 
+It allows users to input an employee number to predict churn probability and visualize key factors influencing the prediction. 
+The model uses the IBM HR Attrition dataset, which includes approximately 1,470 records.
 """)
 
 # Load and preprocess the dataset
