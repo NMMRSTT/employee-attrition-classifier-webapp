@@ -122,10 +122,10 @@ streamlit run app.py
 - **Color**: Blue means lower values, red means higher values for that factor.
 - **This Employee**: The larger, circled dot shows where this specific employee stands.
 
-**Key Takeaway**: Factors with blue dots to the left are helping retain this employee, while red dots to the right suggest areas of concern.
+**Key Takeaway**: Factors with dots to the left are helping retain this employee, while dots to the right suggest areas of concern.
 
 ### Traditional Feature Importance
-Displays the top 10 most important features used by the model in making predictions.
+Displays the top 5 most important features used by the model in making predictions.
 
 ## Notes
 
