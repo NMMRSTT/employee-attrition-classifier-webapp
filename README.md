@@ -86,7 +86,7 @@ This detailed data dictionary provides a comprehensive overview of the dataset, 
 
 1. Clone the repository:
    ```sh
-   git clone https://github.com/yourusername/EMPLOYEE-ATTRITION-CLASSIFIER-WEBAPP.git
+   git clone https://github.com/NMMRSTT/EMPLOYEE-ATTRITION-CLASSIFIER-WEBAPP.git
    cd EMPLOYEE-ATTRITION-CLASSIFIER-WEBAPP
    ```
 
