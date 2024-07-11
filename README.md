@@ -4,7 +4,7 @@ This repository contains a Streamlit web application for predicting employee chu
 
 [Check out the live app here!](https://employee-churn-prediction-npbdto7p7q-ew.a.run.app/)
 
-**Important**: The primary focus of this project is the Streamlit web app. EDA, feature engineering, and modeling are less important.
+**Important**: The primary focus of this project is the Streamlit web app. EDA, feature engineering, and modeling are not the focus.
 
 ## Project Structure
 
