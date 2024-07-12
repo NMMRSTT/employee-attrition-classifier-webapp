@@ -7,10 +7,15 @@ import matplotlib.pyplot as plt
 import numpy as np
 import xgboost as xgb
 from matplotlib.colors import LinearSegmentedColormap
+import logging
+
+# Set up logging
+logging.basicConfig(level=logging.INFO, format='%(asctime)s - %(levelname)s - %(message)s')
 
 # Function to check if file exists
 def check_file_exists(file_path):
     if not os.path.exists(file_path):
+        logging.error(f"File not found: {file_path}")
         st.error(f"File not found: {file_path}")
         return False
     return True
@@ -20,7 +25,12 @@ image_path = os.path.join(os.path.dirname(__file__), "image.png")
 
 # Header Image
 if check_file_exists(image_path):
-    st.image(image_path, use_column_width=True)
+    try:
+        st.image(image_path, use_column_width=True)
+        logging.info("Successfully loaded header image")
+    except Exception as e:
+        logging.error(f"Error loading header image: {str(e)}")
+        st.error("Unable to load header image. Please refresh the page or try again later.")
 
 # Title and Description
 st.title("Employee Churn Prediction")
@@ -66,41 +76,55 @@ The model uses the IBM HR Attrition dataset, which includes approximately 1,470 
 # Load and preprocess the dataset
 @st.cache_data
 def load_and_preprocess_data():
-    if os.path.exists("local_file.csv"):
-        st.markdown('<div class="success-box">Dataset file found.</div>', unsafe_allow_html=True)
-        df = pd.read_csv("local_file.csv")
-    else:
-        st.markdown('<div class="error-box">Dataset file not found.</div>', unsafe_allow_html=True)
-        st.stop()
-    
-    # Fix column types for Arrow compatibility
-    for col in df.columns:
-        if df[col].dtype == 'object':
-            if set(df[col].unique()).issubset({True, False, 'True', 'False'}):
-                df[col] = df[col].map({'True': True, 'False': False}).astype(bool)
-            else:
-                df[col] = df[col].astype('category')
+    try:
+        if os.path.exists("local_file.csv"):
+            st.markdown('<div class="success-box">Dataset file found.</div>', unsafe_allow_html=True)
+            df = pd.read_csv("local_file.csv")
+        else:
+            logging.error("Dataset file not found")
+            st.markdown('<div class="error-box">Dataset file not found.</div>', unsafe_allow_html=True)
+            st.stop()
+        
+        # Fix column types for Arrow compatibility
+        for col in df.columns:
+            if df[col].dtype == 'object':
+                if set(df[col].unique()).issubset({True, False, 'True', 'False'}):
+                    df[col] = df[col].map({'True': True, 'False': False}).astype(bool)
+                else:
+                    df[col] = df[col].astype('category')
 
-    df = pd.get_dummies(df, columns=["Attrition", "BusinessTravel", "Department", "EducationField", "Gender", "JobRole", "MaritalStatus", "Over18", "OverTime"], drop_first=True)
-    df.set_index("EmployeeNumber", inplace=True)
-    
-    # Ensure 'Attrition_Yes' is not in the feature set
-    if 'Attrition_Yes' in df.columns:
-        df = df.drop(columns=['Attrition_Yes'])
-    
-    return df
+        df = pd.get_dummies(df, columns=["Attrition", "BusinessTravel", "Department", "EducationField", "Gender", "JobRole", "MaritalStatus", "Over18", "OverTime"], drop_first=True)
+        df.set_index("EmployeeNumber", inplace=True)
+        
+        # Ensure 'Attrition_Yes' is not in the feature set
+        if 'Attrition_Yes' in df.columns:
+            df = df.drop(columns=['Attrition_Yes'])
+        
+        logging.info("Successfully loaded and preprocessed data")
+        return df
+    except Exception as e:
+        logging.error(f"Error in load_and_preprocess_data: {str(e)}")
+        st.error("An error occurred while loading the dataset. Please try again later.")
+        st.stop()
 
 # Load the model
 @st.cache_resource
 def load_model():
-    if os.path.exists("xgboost_model.json"):
-        st.markdown('<div class="success-box">Model file found.</div>', unsafe_allow_html=True)
-        model = xgb.Booster()
-        model.load_model("xgboost_model.json")
-    else:
-        st.markdown('<div class="error-box">Model file not found. Please ensure "xgboost_model.json" exists.</div>', unsafe_allow_html=True)
+    try:
+        if os.path.exists("xgboost_model.json"):
+            st.markdown('<div class="success-box">Model file found.</div>', unsafe_allow_html=True)
+            model = xgb.Booster()
+            model.load_model("xgboost_model.json")
+            logging.info("Successfully loaded model")
+        else:
+            logging.error("Model file not found")
+            st.markdown('<div class="error-box">Model file not found. Please ensure "xgboost_model.json" exists.</div>', unsafe_allow_html=True)
+            st.stop()
+        return model
+    except Exception as e:
+        logging.error(f"Error in load_model: {str(e)}")
+        st.error("An error occurred while loading the model. Please try again later.")
         st.stop()
-    return model
 
 # Load data and model
 df = load_and_preprocess_data()
@@ -149,8 +173,10 @@ else:
             explainer = shap.TreeExplainer(model)
             shap_values = explainer.shap_values(df)
             shap_values_employee = explainer.shap_values(employee_data)
+            logging.info("Successfully computed SHAP values")
         except Exception as e:
-            st.markdown(f'<div class="error-box">Error computing SHAP values: {e}</div>', unsafe_allow_html=True)
+            logging.error(f"Error computing SHAP values: {str(e)}")
+            st.markdown(f'<div class="error-box">Error computing SHAP values. Please try again later.</div>', unsafe_allow_html=True)
             st.stop()
 
         # Select only non-binary features for SHAP interpretation
@@ -188,8 +214,10 @@ else:
             
             plt.tight_layout()
             st.pyplot(fig)
+            logging.info("Successfully generated and displayed SHAP plot")
         except Exception as e:
-            st.markdown(f'<div class="error-box">Error generating SHAP plot: {e}</div>', unsafe_allow_html=True)
+            logging.error(f"Error generating SHAP plot: {str(e)}")
+            st.markdown(f'<div class="error-box">Error generating SHAP plot. Please try refreshing the page or try again later.</div>', unsafe_allow_html=True)
 
         # Explanation of the SHAP plot
         st.markdown("""
@@ -231,7 +259,8 @@ else:
         """)
 
     except Exception as e:
-        st.markdown(f'<div class="error-box">Error during prediction: {e}</div>', unsafe_allow_html=True)
+        logging.error(f"Error during prediction: {str(e)}")
+        st.markdown(f'<div class="error-box">An error occurred during prediction. Please try again later.</div>', unsafe_allow_html=True)
 
 # Footer
 st.markdown("""
