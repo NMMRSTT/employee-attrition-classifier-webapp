@@ -15,7 +15,7 @@ steps:
         gcloud run deploy employee-attrition-classifier-webapp \
           --image gcr.io/$PROJECT_ID/employee-attrition-classifier-webapp \
           --platform managed \
-          --region us-central1 \
+          --region eu-west1 \
           --allow-unauthenticated
 
 secrets:
