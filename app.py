@@ -60,7 +60,9 @@ def load_and_preprocess_data():
 def load_model():
     try:
         if check_file_exists_gcs("xgboost_model.json"):
+            logging.info("Model file found in GCS. Downloading...")
             model_content = download_from_gcs("xgboost_model.json")
+            logging.info("Model file downloaded. Loading model...")
             model = xgb.Booster()
             model.load_model(io.BytesIO(model_content))
             logging.info("Successfully loaded model from GCS")
@@ -71,7 +73,7 @@ def load_model():
         return model
     except Exception as e:
         logging.error(f"Error in load_model: {str(e)}")
-        st.error("An error occurred while loading the model. Please try again later.")
+        st.error(f"An error occurred while loading the model: {str(e)}")
         st.stop()
 
 # Function to generate and cache SHAP plot
