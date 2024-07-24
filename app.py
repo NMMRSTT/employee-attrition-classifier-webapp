@@ -63,8 +63,10 @@ def load_model():
             logging.info("Model file found in GCS. Downloading...")
             model_content = download_from_gcs("xgboost_model.json")
             logging.info("Model file downloaded. Loading model...")
+            with open("/tmp/xgboost_model.json", "wb") as f:
+                f.write(model_content)
             model = xgb.Booster()
-            model.load_model(io.BytesIO(model_content))
+            model.load_model("/tmp/xgboost_model.json")
             logging.info("Successfully loaded model from GCS")
         else:
             logging.error("Model file not found in GCS")
