@@ -10,12 +10,15 @@ steps:
     args:
       - '-c'
       - |
+        # Access the secret key stored in Secret Manager
         gcloud secrets versions access latest --secret="your-service-account-key-json" > /workspace/service-account-key.json
+        # Set the environment variable to use the service account key
         export GOOGLE_APPLICATION_CREDENTIALS=/workspace/service-account-key.json
+        # Deploy to Cloud Run
         gcloud run deploy employee-attrition-classifier-webapp \
           --image gcr.io/$PROJECT_ID/employee-attrition-classifier-webapp \
           --platform managed \
-          --region eu-west1 \
+          --region europe-west1 \
           --allow-unauthenticated
 
 secrets:
