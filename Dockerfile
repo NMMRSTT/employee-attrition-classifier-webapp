@@ -5,7 +5,7 @@ FROM python:3.9-slim
 WORKDIR /app
 
 # Copy the current directory contents into the container at /app
-COPY . /app
+COPY . .
 
 # Create and activate a virtual environment
 RUN python -m venv /opt/venv
@@ -14,11 +14,9 @@ ENV PATH="/opt/venv/bin:$PATH"
 # Upgrade pip
 RUN pip install --upgrade pip
 
-# Copy requirements.txt before installing dependencies
-COPY requirements.txt .
-
-# Install any needed packages specified in requirements.txt
-RUN pip install --no-cache-dir -r requirements.txt
+# Install dependencies from requirements.txt and Google Cloud Storage client
+RUN pip install --no-cache-dir -r requirements.txt && \
+    pip install google-cloud-storage
 
 # Make port 8080 available to the world outside this container
 EXPOSE 8080

@@ -1,0 +1,23 @@
+steps:
+  - name: 'gcr.io/cloud-builders/docker'
+    args: ['build', '-t', 'gcr.io/$PROJECT_ID/employee-attrition-classifier-webapp', '.']
+  
+  - name: 'gcr.io/cloud-builders/docker'
+    args: ['push', 'gcr.io/$PROJECT_ID/employee-attrition-classifier-webapp']
+
+  - name: 'gcr.io/cloud-builders/gcloud'
+    entrypoint: 'bash'
+    args:
+      - '-c'
+      - |
+        gcloud secrets versions access latest --secret="your-service-account-key-json" > /workspace/service-account-key.json
+        export GOOGLE_APPLICATION_CREDENTIALS=/workspace/service-account-key.json
+        gcloud run deploy employee-attrition-classifier-webapp \
+          --image gcr.io/$PROJECT_ID/employee-attrition-classifier-webapp \
+          --platform managed \
+          --region us-central1 \
+          --allow-unauthenticated
+
+secrets:
+- secretEnv:
+    SERVICE_ACCOUNT_KEY: projects/857260730603/secrets/your-service-account-key-json/versions/latest
